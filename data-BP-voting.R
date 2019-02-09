@@ -24,9 +24,10 @@ df_voters_proxy <- df_voters[-which(df_voters$proxy == ""), ]
 #direct voters
 df_voters_direct <- df_voters[which(df_voters$proxy == ""), ]
 
-sum(df_voters_proxy$staked)
-sum(df_voters_direct$staked)
+sum(df_voters_proxy$staked) / sum(df_voters$staked)
+sum(df_voters_direct$staked) / sum(df_voters$staked)
 
+sum(df_voters$staked)
 # Percentage of voters who have voted via proxy. 
 sum(df_voters_proxy$staked) / (sum(df_voters_direct$staked) + sum(df_voters_proxy$staked))
 
@@ -44,15 +45,66 @@ count.fields(df[2,3],sep = ",")
 
 producers <- as.data.frame.list(df[,3] )
 
-count.fields(textConnection(df[6,3]), sep = ",")
+#count.fields(textConnection(df[6,3]), sep = ",")
+
+distribution <- sapply(df_voters[,3], function(x) count.fields(textConnection(x), sep = ",") )
+
+sapply(df_voters[1,3], function(x) count.fields(textConnection(x), sep = ",") )
+
+distribution2 <-sapply(strsplit(df_voters[,3],","),FUN=function(x){length(x)})
 
 
-producers
-head(producers)
+df_voters$distribution <- distribution2
+
+str(df_voters)
+
+df_voters
+
+tot<- aggregate(df_voters$staked ~ df_voters$distribution, df_voters, sum)
+
+rep.int(1,nrow(df_voters))
 
 
-df[,3] <- as.character(df[,3])
+df_voters$temp <- rep.int(1,nrow(df_voters))
 
-df[,3]
-str(df)
-df[1,3]
+tot2<- aggregate(df_voters$temp ~ df_voters$distribution, df_voters, sum)
+tot2[,2]
+
+names(tot2) <- c("bp_number", "votes")
+names(tot) <- c("bp_number", "votes")
+tot
+
+
+
+# vote distribution
+# tot - eos vote data
+library(ggplot2)
+p<-ggplot(data=tot, aes(x=bp_number, y=votes)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  theme_minimal() + xlab("Number of block producers voted for")+ ylab("Total eos Votes") + ggtitle("Vote distribution - Actual EOS Votes")
+
+p
+
+
+# account distribution
+# tot2 - account data
+p<-ggplot(data=tot2, aes(x=bp_number, y=votes)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  theme_minimal() + xlab("Number of block producers voted for")+ ylab("Total accounts") + ggtitle("Vote distribution - Number of accounts")
+p
+
+
+tot2$votes[30]/ sum(tot2$votes)
+
+tot2$votes[1]  / sum(tot2$votes)
+sum(tot2$votes)
+
+tot$votes[30]  / sum(tot$votes)
+
+
+
+
+
+
+
+
