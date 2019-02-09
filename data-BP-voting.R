@@ -18,6 +18,17 @@ df_voters <- df[-which(df$producers == ""), ]
 # All who have staked but not voted.
 df_nonvoters <- df[which(df$producers == ""), ]
 
+
+# USed to calculate the fraction of the network controlled by just a few individuals
+sum(head(df_voters$staked,10)) / sum(df_voters$staked)
+
+
+
+sum(head(df_voters$staked,1))
+
+# vote power distribution plot 
+
+plot((head(df_voters$staked,500)/1000000), type = "b",cex = .5, ylab = "Number of votes (millions)" , ylim = c(0,12), xlab = "Top 500 accounts with the greatest voting power", main = "Voting power distribution amongst accounts")
 #proxy voters
 df_voters_proxy <- df_voters[-which(df_voters$proxy == ""), ]
 
@@ -101,7 +112,7 @@ sum(tot2$votes)
 
 tot$votes[30]  / sum(tot$votes)
 
-
+sum(tot$votes)
 
 
 
