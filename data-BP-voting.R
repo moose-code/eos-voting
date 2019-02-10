@@ -86,7 +86,10 @@ names(tot) <- c("bp_number", "votes")
 tot
 
 
+tot[,2]
 
+myvec <- tot[,2]
+sum(myvec[20:30])
 # vote distribution
 # tot - eos vote data
 library(ggplot2)
@@ -107,15 +110,18 @@ p
 
 tot2$votes[30]/ sum(tot2$votes)
 
+
+
+
 tot2$votes[1]  / sum(tot2$votes)
 sum(tot2$votes)
 
 tot$votes[30]  / sum(tot$votes)
 
-sum(tot$votes)
+sum(myvec[20:30]) / sum(tot$votes)
 
+sum(myvec[20:30]) / sum(myvec)
 
-
-
+sum(myvec[20:30])
 
 
