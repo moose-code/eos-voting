@@ -5,7 +5,8 @@ library(factoextra)
 library(cluster)
 library(gridExtra)
 library(data.table)
-
+library(clustertend)
+library(NbClust)
 
 # Getting required data in
 filename<-paste(path,"eos_voting_data.csv", sep="")
@@ -56,6 +57,8 @@ mydf<- mydf[-c(1),]
 rownames(mydf) <- colnames(df_mod)
 colnames(mydf) <- rownames(df_mod)
 
+str(mydf)
+head(mydf)
 # EXAMPLE
 #                X1    X2    X3   X4    X5    X6    X7    X8    X9   X10   X11 .... -> number of voters (from strongest)
 #alohaeosprod  TRUE FALSE FALSE TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE 
@@ -66,29 +69,49 @@ colnames(mydf) <- rownames(df_mod)
 
 # Creating a dissimiliarity matrix in preperation for clustering. 
 dd <- daisy(mydf)
-fviz_dist(dd)
 
+# VISUALING the dissmaility matrix, with and without labels
+fviz_dist(dd, lab_size = 8.5)
 fviz_dist(dd, show_labels = FALSE)+ labs(title = "clustering data")
 
 
-km.res <- kmeans(mydf, 2, nstart = 50)
+# Hopkins statistic to also check whether clustering is visually possible.
+hopkins(mydf, n = nrow(mydf)-1) # Results -> [1] 0.2968359
+
+res <- get_clust_tendency(mydf, n = nrow(mydf)-1, graph = FALSE)
+res$hopkins_stat
+
+
+
+# Number of clusters
+fviz_nbclust(mydf, kmeans, method = "silhouette")+
+  theme_classic()
+#fviz_nbclust(mydf, FUNcluster, method = c("silhouette", "wss", "gap_stat"))
+
+
+
+
+
+
+
+#############################
+#### CLUSTERING ANALYSIS
+km.res <- kmeans(mydf, 3, nstart = 50)
 
 fviz_cluster(km.res, data = mydf,
-             palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07","green","brown"), 
-             ellipse.type = "euclid", 
-             #labelsize = 0.3,
-             #pointsize = 0.1,
-             #choose.vars = c("GDP", "UrbanPopulation"),
-             geom="point",
+             palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"), 
+             ellipse.type = "t", 
              star.plot = TRUE, # Add segments from centroids to items
              repel = TRUE, # Avoid label overplotting (slow)
-             #labelsize = 0.3,
              ggtheme = theme_minimal()
 )
 
+
+
+###### PCA ANALYSIS AND CONTRIBUTION.
 pca.out<-prcomp(mydf)
 pca.out
-biplot(pca.out,scale = 0, cex=0.80)
+biplot(pca.out,scale = 0, cex=0.50)
 
 plot1 <- fviz_contrib(pca.out, choice="var", axes = 1, top = 19)
 plot2 <- fviz_contrib(pca.out, choice="var", axes = 2, top = 19, color = "lightgrey")
