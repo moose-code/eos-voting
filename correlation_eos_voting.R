@@ -110,22 +110,23 @@ fviz_cluster(km.res, data = mydf,
 
 ###### PCA ANALYSIS AND CONTRIBUTION.
 pca.out<-prcomp(mydf)
-pca.out
-biplot(pca.out,scale = 0, cex=0.50)
+#pca.out
+#biplot(pca.out,scale = 0, cex=0.50)
 
-plot1 <- fviz_contrib(pca.out, choice="var", axes = 1, top = 19)
-plot2 <- fviz_contrib(pca.out, choice="var", axes = 2, top = 19, color = "lightgrey")
+plot1 <- fviz_contrib(pca.out, choice="var", axes = 1, top = 8)
+plot2 <- fviz_contrib(pca.out, choice="var", axes = 2, top = 8, color = "lightgrey")
 grid.arrange(plot1, plot2, ncol=2)
 
 
-res.hc1 <- hclust(d = dd, method = "ward.D2")
 
+###### Hieracrical clustering.
+res.hc1 <- hclust(d = dd, method = "ward.D2")
 cor(dd, cophenetic(res.hc1))
 
 fviz_dend(res.hc1, k = 2, # Cut in four groups
-          cex = 0.5, # label size
+          cex = 0.77, # label size
           #k_colors = "rickandmorty",
-          #type = "circular",
+          type = "circular",
           horiz = TRUE,
           k_colors = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"), 
           color_labels_by_k = TRUE, # color labels by groups
